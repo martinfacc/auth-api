@@ -83,6 +83,76 @@ router.post('/create', async (req, res) => {
   }
 })
 
+router.post('/update', async (req, res) => {
+  try {
+    const { user } = req
+
+    if (user.roleId !== 1) return res.status(403).json({ error: 'Forbidden' })
+
+    const { id, firstname, lastname, email, password, roleId } = req.body
+    // Validate user input (this is just a placeholder, implement your own logic)
+    if (!id || !firstname || !lastname || !email || !password || !roleId) {
+      return res.status(400).json({ error: 'All fields are required' })
+    }
+
+    // Check if user exists
+    const existingUser = await User.findByPk(id)
+    if (!existingUser) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    // Update the user
+    await existingUser.update({
+      firstname,
+      lastname,
+      email,
+      password,
+      roleId,
+    })
+
+    res.status(200).json({
+      id: existingUser.id,
+      firstname: existingUser.firstname,
+      lastname: existingUser.lastname,
+      email: existingUser.email,
+      roleId: existingUser.roleId,
+      createdAt: existingUser.createdAt,
+      updatedAt: existingUser.updatedAt,
+    })
+  } catch (error) {
+    console.error('Error during update:', error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+})
+
+router.post('/delete', async (req, res) => {
+  try {
+    const { user } = req
+
+    if (user.roleId !== 1) return res.status(403).json({ error: 'Forbidden' })
+
+    const { id } = req.body
+    // Validate user input (this is just a placeholder, implement your own logic)
+    if (!id) {
+      return res.status(400).json({ error: 'ID is required' })
+    }
+
+    // Check if user exists
+    const existingUser = await User.findByPk(id)
+    if (!existingUser) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    // Delete the user
+    await existingUser.destroy()
+
+    res.status(200).json({ message: 'User deleted successfully' })
+  } catch (error) {
+    console.error('Error during deletion:', error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+})
+
 router.get('/all', async (req, res) => {
   try {
     const { user } = req
