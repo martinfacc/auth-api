@@ -41,6 +41,48 @@ router.post('/register', async (req, res) => {
   }
 })
 
+router.post('/create', async (req, res) => {
+  try {
+    const { user } = req
+
+    if (user.roleId !== 1) return res.status(403).json({ error: 'Forbidden' })
+
+    const { firstname, lastname, email, password, roleId } = req.body
+    // Validate user input (this is just a placeholder, implement your own logic)
+    if (!firstname || !lastname || !email || !password || !roleId) {
+      return res.status(400).json({ error: 'All fields are required' })
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ where: { email } })
+    if (existingUser) {
+      return res.status(409).json({ error: 'User already exists' })
+    }
+
+    // Create a new user
+    const createdUser = await User.create({
+      firstname,
+      lastname,
+      email,
+      password,
+      roleId,
+    })
+
+    res.status(201).json({
+      id: createdUser.id,
+      firstname: createdUser.firstname,
+      lastname: createdUser.lastname,
+      email: createdUser.email,
+      roleId: createdUser.roleId,
+      createdAt: createdUser.createdAt,
+      updatedAt: createdUser.updatedAt,
+    })
+  } catch (error) {
+    console.error('Error during creation:', error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+})
+
 router.get('/all', async (req, res) => {
   try {
     const { user } = req
