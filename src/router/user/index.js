@@ -1,5 +1,5 @@
 import express from 'express'
-import { User } from '../../database/models/index.js'
+import { Role, User } from '../../database/models/index.js'
 
 const router = express.Router()
 
@@ -37,6 +37,30 @@ router.post('/register', async (req, res) => {
     })
   } catch (error) {
     console.error('Error during registration:', error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+})
+
+router.get('/all', async (req, res) => {
+  try {
+    const { user } = req
+    if (user.roleId !== 1) {
+      return res.status(403).json({ error: 'Forbidden' })
+    }
+
+    const users = await User.findAll({
+      attributes: { exclude: ['password'] },
+      include: [
+        {
+          model: Role,
+          as: 'role',
+          attributes: ['id', 'name'],
+        },
+      ],
+    })
+    res.status(200).json(users)
+  } catch (error) {
+    console.error('Error fetching users:', error)
     res.status(500).json({ error: 'Internal Server Error' })
   }
 })
