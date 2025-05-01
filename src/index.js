@@ -3,9 +3,8 @@ import cors from 'cors'
 import listEndpoints from 'express-list-endpoints'
 import { sequelize } from './database/index.js'
 import router from './router/index.js'
-import Role from './database/models/role.js'
-import ROLES from './database/seeders/role.js'
 import { authMiddleware } from './middleware.js'
+import { APP_PORT } from './env.js'
 
 const app = express()
 
@@ -15,14 +14,11 @@ app.use(express.json())
 app.use(authMiddleware)
 app.use('/api', router)
 
-app.listen(3033, async () => {
-  await sequelize.sync({ force: true })
+app.listen(APP_PORT, async () => {
+  await sequelize.sync({ force: false })
   console.log('✅ Database synced')
 
-  await Role.bulkCreate(ROLES)
-  console.log('🌱 Database seeded')
-
-  console.log('🚀 Server running at http://localhost:3033')
+  console.log(`🚀 Server running at http://localhost:${APP_PORT}`)
 
   // Mover aquí el listado de endpoints
   const endpoints = listEndpoints(app)

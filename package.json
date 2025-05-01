@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --write .",
-    "precommit": "yarn lint:fix && yarn prettier"
+    "precommit": "yarn lint:fix && yarn prettier",
+    "seed": "node src/database/seeders/index.js"
   },
   "keywords": [],
   "author": "",
